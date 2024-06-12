@@ -2,6 +2,9 @@ package edu.uade.tp_db.entidades;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Document(collection = "usuarios")
 public class Usuario {
 
@@ -14,6 +17,7 @@ public class Usuario {
     private String direccion;
     private String documento;
     private String password;
+    private List<Factura> facturas;
 
 
     public Usuario(String nombre, String apellido, String correo, String direccion, String documento, String password) {
@@ -23,6 +27,19 @@ public class Usuario {
         this.direccion = direccion;
         this.documento = documento;
         this.password = password;
+        this.facturas= new ArrayList<>();
+    }
+
+
+    public void addFactura(Factura factura){
+        this.facturas.add(factura);
+    }
+    public List<Factura> getFacturas() {
+        return facturas;
+    }
+
+    public void setFacturas(List<Factura> facturas) {
+        this.facturas = facturas;
     }
 
     public String getNombre() {

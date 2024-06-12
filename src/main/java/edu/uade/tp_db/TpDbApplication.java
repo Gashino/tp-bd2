@@ -1,9 +1,6 @@
 package edu.uade.tp_db;
 
-import edu.uade.tp_db.entidades.Carrito;
-import edu.uade.tp_db.entidades.Item;
-import edu.uade.tp_db.entidades.Producto;
-import edu.uade.tp_db.entidades.Usuario;
+import edu.uade.tp_db.entidades.*;
 
 import edu.uade.tp_db.servicios.CarritoService;
 import edu.uade.tp_db.servicios.ProductosService;
@@ -101,7 +98,7 @@ public class TpDbApplication implements CommandLineRunner {
 		do {
 			System.out.println("Ingresar opción deseada (1-4):");
 			System.out.println("1. Manipular carrito");
-			System.out.println("2. Ver mis pedidos");
+			System.out.println("2. Ver mis facturas");
 			System.out.println("3. Ver catalogo de productos");
 			System.out.println("4. Cerrar sesion");
 
@@ -118,7 +115,7 @@ public class TpDbApplication implements CommandLineRunner {
 					menuCarrito();
 					break;
 				case 2:
-					menupedidos();
+					menuFacturas();
 					break;
 				case 3:
 					verProductos("menuLogueado");
@@ -184,7 +181,7 @@ public class TpDbApplication implements CommandLineRunner {
 		} while (opcion < 1 || opcion > 7);
 	}
 
-	public static void menupedidos(){}
+	public static void menuFacturas(){}
 
 	public static void limpiarConsola(){
 		for (int i = 0; i < 20; i++) {
@@ -329,7 +326,79 @@ public class TpDbApplication implements CommandLineRunner {
 		menuCarrito();
 	}
 
-	public static void realizarPedido(){}
+	public static void realizarPedido(){
+		MetodoDePago metodoDePago = null;
+		if(carrito.items.isEmpty()){
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("Primero debe agregar productos al carrito para realizar un pedido.");
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			menuCarrito();
+		}
+		else{
+			int opcion = 0;
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("SELECCIONAR MEDIO DE PAGO");
+			do {
+				System.out.println("Ingresar opción deseada (1-4):");
+				System.out.println("1. T.CREDITO");
+				System.out.println("2. T.DEBITO");
+				System.out.println("3. EFECTIVO");
+				System.out.println("4. Volver al menu");
+
+				while (!scanner.hasNextInt()) {
+					System.out.println("Por favor ingresa un número válido.");
+					scanner.next();
+				}
+
+				opcion = scanner.nextInt();
+				scanner.nextLine();
+
+				switch (opcion) {
+					case 1:
+						metodoDePago = MetodoDePago.TARJETA_CREDITO;
+						break;
+					case 2:
+						metodoDePago = MetodoDePago.TARJETA_DEBITO;
+						break;
+					case 3:
+						metodoDePago = MetodoDePago.EFECTIVO;
+						break;
+					case 4:
+						menuCarrito();
+						break;
+					default:
+						System.out.println("Opción no válida, por favor ingresa un número entre 1 y 4.");
+						break;
+				}
+			} while (opcion < 1 || opcion > 4);
+		}
+
+		AtomicInteger acum = new AtomicInteger();
+		carrito.getItems().forEach(item->{
+			Producto producto = productos.stream()
+					.filter(p -> p.getId().equals( item.getIdProducto())).findAny()
+					.get();
+			acum.addAndGet(producto.getPrecio() * item.getCantidad());
+		});
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("               INFORMACION DE SU PEDIDO                      ");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("Total a pagar: " + acum);
+		System.out.println("Medio de pago: " + metodoDePago.name());
+		System.out.println("Total de productos: " + carrito.getItems().size());
+
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("          Pedido realizado con éxito");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+		Factura factura= new Factura(carrito.getItems(),acum.get(),metodoDePago);
+		staticUsuario.addFactura(factura);
+		staticUsuariosService.actualizarUsuario(staticUsuario);
+		staticCarritoService.eliminarCarrito(carrito);
+		carrito = new Carrito(staticUsuario.getId());
+
+		menuCarrito();
+	}
 
 	public static void agregarProducto(){
 		System.out.println("--------------------------------------------------");

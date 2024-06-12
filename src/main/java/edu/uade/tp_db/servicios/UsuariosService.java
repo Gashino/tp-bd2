@@ -37,4 +37,8 @@ public class UsuariosService implements IUsuariosService {
             return false;
         }
     }
+
+    public void actualizarUsuario(Usuario usuario){
+        userRepository.save(usuario);
+    }
 }

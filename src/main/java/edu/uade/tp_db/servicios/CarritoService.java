@@ -64,4 +64,8 @@ public class CarritoService implements ICarritosService {
         //mongodb actualizacion de carrito
         carritoRepositorio.save(carrito);
     }
+
+    public void eliminarCarrito(Carrito carrito) {
+        carritoRepositorio.delete(carrito);
+    }
 }
