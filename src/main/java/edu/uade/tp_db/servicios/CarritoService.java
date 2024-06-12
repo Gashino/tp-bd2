@@ -22,6 +22,8 @@ public class CarritoService implements ICarritosService {
         //mongodb actualizacion de carrito
         carrito.addItem(item);
         carritoRepositorio.save(carrito);
+
+        //Redis actualizacion de carrito en pila
         redisSaveCarrito(carrito);
     }
 
@@ -30,6 +32,9 @@ public class CarritoService implements ICarritosService {
         //mongodb actualizacion de carrito
         carrito.removeItem(item);
         carritoRepositorio.save(carrito);
+
+        //Redis actualizacion de carrito en pila
+        redisSaveCarrito(carrito);
     }
 
     @Override
@@ -53,6 +58,10 @@ public class CarritoService implements ICarritosService {
     }
 
     public void getAnteriorCarrito(Carrito carrito) {
+
+        //Redis get anterior carrito
         redisDesapilarCarrito(carrito);
+        //mongodb actualizacion de carrito
+        carritoRepositorio.save(carrito);
     }
 }
