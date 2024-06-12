@@ -7,6 +7,7 @@ public class Factura {
     int total;
     EstadoFactura estado;
     MetodoDePago metodoDePago;
+    int restante;
 
 
     public Factura(List<Item> items, int total, MetodoDePago metodoDePago) {
@@ -14,6 +15,31 @@ public class Factura {
         this.total = total;
         this.metodoDePago = metodoDePago;
         this.estado = EstadoFactura.PENDIENTE;
+        this.restante = total;
+    }
+
+    public int getRestante() {
+        return restante;
+    }
+
+    public void setRestante(int restante) {
+        this.restante = restante;
+    }
+
+    public MetodoDePago getMetodoDePago() {
+        return metodoDePago;
+    }
+
+    public void setMetodoDePago(MetodoDePago metodoDePago) {
+        this.metodoDePago = metodoDePago;
+    }
+
+    public EstadoFactura getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoFactura estado) {
+        this.estado = estado;
     }
 
     public List<Item> getItems() {
