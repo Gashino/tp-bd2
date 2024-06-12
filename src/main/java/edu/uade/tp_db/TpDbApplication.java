@@ -15,7 +15,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -271,6 +270,8 @@ public class TpDbApplication implements CommandLineRunner {
 			menuCarrito();
 		}
 		else{
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("              CARRITO ACTUAL DEL USUARIO");
 			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			AtomicInteger acum = new AtomicInteger();
 			carrito.getItems().forEach(item->{
@@ -370,9 +371,6 @@ public class TpDbApplication implements CommandLineRunner {
 
 	public static void retrocederCarrito(){
 		staticCarritoService.getAnteriorCarrito(carrito);
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		System.out.println("Carrito retrocedido");
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		menuCarrito();
 	}
 
