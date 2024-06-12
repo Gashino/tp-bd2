@@ -7,4 +7,7 @@ public interface ICarritosService {
     public void agregarProductoACarrito(Item item, Carrito carrito);
     public void quitarProductoDeCarrito(Item item, Carrito carrito);
     public Carrito getCarritoPorUsuario(String idUsuario);
+
+    public void redisSaveCarrito(Carrito carrito);
+    public void redisDesapilarCarrito(Carrito carrito);
 }

@@ -14,12 +14,15 @@ public class CarritoService implements ICarritosService {
 
     @Autowired
     CarritoRepositorio carritoRepositorio;
+    @Autowired
+    RedisService redisService;
 
     @Override
     public void agregarProductoACarrito(Item item, Carrito carrito) {
         //mongodb actualizacion de carrito
         carrito.addItem(item);
         carritoRepositorio.save(carrito);
+        redisSaveCarrito(carrito);
     }
 
     @Override
@@ -37,6 +40,19 @@ public class CarritoService implements ICarritosService {
         }
         else {return new Carrito(idUsuario);
         }
+    }
 
+    @Override
+    public void redisSaveCarrito(Carrito carrito) {
+        redisService.redisSaveCarrito(carrito);
+    }
+
+    @Override
+    public void redisDesapilarCarrito(Carrito carrito) {
+        redisService.redisDesapilarCarrito(carrito);
+    }
+
+    public void getAnteriorCarrito(Carrito carrito) {
+        redisDesapilarCarrito(carrito);
     }
 }

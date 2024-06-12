@@ -368,7 +368,13 @@ public class TpDbApplication implements CommandLineRunner {
 		menuCarrito();
 	}
 
-	public static void retrocederCarrito(){}
+	public static void retrocederCarrito(){
+		staticCarritoService.getAnteriorCarrito(carrito);
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("Carrito retrocedido");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		menuCarrito();
+	}
 
 	//------------------------PRODUCTOS METODOS------------------------
 
