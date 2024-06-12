@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: tp-bd
+  redis:
+    host: redis-15557.c11.us-east-1-3.ec2.redns.redis-cloud.com
+    port: 15557
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/tp-bd
