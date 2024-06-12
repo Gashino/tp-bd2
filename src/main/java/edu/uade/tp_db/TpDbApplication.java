@@ -59,7 +59,9 @@ public class TpDbApplication implements CommandLineRunner {
 	//------------------------MENUS------------------------
 	public static void menu() {
 		int opcion = 0;
-
+		System.out.println("                      MENU LOGIN                          ");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("");
 		do {
 			System.out.println("Ingresar opción deseada (1-3):");
 			System.out.println("1. Registrarse");
@@ -94,7 +96,9 @@ public class TpDbApplication implements CommandLineRunner {
 
 	public static void menuLogueado(){
 		int opcion = 0;
-
+		System.out.println("                      MENU PRINCIPAL                          ");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("");
 		do {
 			System.out.println("Ingresar opción deseada (1-4):");
 			System.out.println("1. Manipular carrito");
@@ -133,7 +137,9 @@ public class TpDbApplication implements CommandLineRunner {
 
 	public static void menuCarrito(){
 		int opcion = 0;
-
+		System.out.println("                      MENU CARRITO                          ");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("");
 		do {
 			System.out.println("Ingresar opción deseada (1-7):");
 			System.out.println("1. Ver carrito");
@@ -181,7 +187,40 @@ public class TpDbApplication implements CommandLineRunner {
 		} while (opcion < 1 || opcion > 7);
 	}
 
-	public static void menuFacturas(){}
+	public static void menuFacturas(){
+		int opcion = 0;
+		System.out.println("                      MENU FACTURAS                          ");
+		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		do {
+			System.out.println("Ingresar opción deseada (1-3):");
+			System.out.println("1. Ver todas mis facturas");
+			System.out.println("2. Registrar pago en factura");
+			System.out.println("3. Volver al menu");
+
+			while (!scanner.hasNextInt()) {
+				System.out.println("Por favor ingresa un número válido.");
+				scanner.next();
+			}
+
+			opcion = scanner.nextInt();
+			scanner.nextLine();
+
+			switch (opcion) {
+				case 1:
+					verFacturas();
+					break;
+				case 2:
+					registrarPagoFactura();
+					break;
+				case 3:
+					menuLogueado();
+					break;
+				default:
+					System.out.println("Opción no válida, por favor ingresa un número entre 1 y 3.");
+					break;
+			}
+		} while (opcion < 1 || opcion > 3);
+	}
 
 	public static void limpiarConsola(){
 		for (int i = 0; i < 20; i++) {
@@ -264,6 +303,7 @@ public class TpDbApplication implements CommandLineRunner {
 			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			System.out.println("No hay productos en el carrito :C");
 			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("");
 			menuCarrito();
 		}
 		else{
@@ -285,6 +325,7 @@ public class TpDbApplication implements CommandLineRunner {
 			});
 			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			System.out.println("Total actual: " + acum);
+			System.out.println("");
 			menuCarrito();
 		}
 	}
@@ -439,6 +480,12 @@ public class TpDbApplication implements CommandLineRunner {
 	}
 
 	public static void retrocederCarrito(){
+		if(carrito.id==null){
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("          No existe carrito para volver.");
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			menuCarrito();
+		}
 		staticCarritoService.getAnteriorCarrito(carrito);
 		menuCarrito();
 	}
@@ -472,6 +519,107 @@ public class TpDbApplication implements CommandLineRunner {
 		else if(menuOrigen.equals("menuCarrito")){
 			menuCarrito();
 		}
+	}
+
+	//-----------------------FACTURAS METODOS--------------------------
+	public static void registrarPagoFactura(){
+		if(staticUsuario.getFacturas().isEmpty()){
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("				NO HAY FACTURAS PARA PAGAR                  ");
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("");
+		}
+		else{
+			String opcion;
+			boolean facturaNoEncontrada;
+			Factura facturaFinal = null;
+			do {
+				System.out.println("---------------------------------------------------------");
+				System.out.println("Ingresar ID de factura a pagar:");
+				opcion = scanner.next();
+				scanner.nextLine();
+
+				final String opcionFinal = opcion;
+				facturaNoEncontrada = staticUsuario.getFacturas().stream()
+						.noneMatch(factura -> factura.getIdFactura().equals(opcionFinal));
+
+				if (facturaNoEncontrada) {
+					System.out.println("Factura no encontrada, por favor intenta de nuevo.");
+				}
+				else{
+					facturaFinal = staticUsuario.getFacturas().stream()
+							.filter(f -> f.getIdFactura().equals(opcionFinal))
+							.findFirst()
+							.get();
+					if(facturaFinal.getEstado().equals(EstadoFactura.PAGADA)){
+						System.out.println("---------------------------------------------------------");
+						System.out.println("Factura ya pagada, no se puede pagar nuevamente.");
+						System.out.println("---------------------------------------------------------");
+						System.out.println("");
+						menuFacturas();
+					}
+				}
+
+			} while (facturaNoEncontrada);
+
+
+			if(!facturaFinal.getEstado().equals(EstadoFactura.PAGADA)){
+				int mongoPagar;
+				do {
+					System.out.println("---------------------------------------------------------");
+					System.out.println("Ingresar monto a pagar mayor a 0: ");
+
+					while (!scanner.hasNextInt()) {
+						System.out.println("Por favor ingresa un número válido.");
+						scanner.next();
+					}
+
+					mongoPagar = scanner.nextInt();
+					scanner.nextLine();
+
+				} while (mongoPagar < 1 || mongoPagar > 1000000);
+
+				facturaFinal.registrarPago(mongoPagar);
+				staticUsuariosService.actualizarUsuario(staticUsuario);
+			}
+		}
+
+		menuFacturas();
+	}
+
+	public static void verFacturas(){
+		if(staticUsuario.getFacturas().isEmpty()){
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("                NO HAY FACTURAS PARA MOSTRAR                ");
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println(" ");
+			System.out.println(" ");
+		}
+		else{
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println("                FACTURAS DEL USUARIO                        ");
+			System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			staticUsuario.getFacturas().forEach(factura -> {
+				System.out.println("--------------------------------------------------------");
+				System.out.println("ID Factura: " + factura.getIdFactura());
+				System.out.println("Total: " + factura.getTotal());
+				System.out.println("Restante: " + factura.getRestante());
+				System.out.print("Productos {  ");
+				factura.getItems().forEach(item -> {
+					Producto producto = productos.stream().filter(p -> p.getId().equals(item.getIdProducto())).findAny().get();
+					System.out.print(" " + producto.getNombre() + " Cantidad: " + item.getCantidad() + " - ");
+				});
+				System.out.println(" }");
+				System.out.println("Medio de pago: " + factura.getMetodoDePago());
+				System.out.println("Estado de la factura: " + factura.getEstado().name());
+				System.out.println("--------------------------------------------------------");
+			});
+			System.out.println(" ");
+			System.out.println(" ");
+		}
+
+
+		menuFacturas();
 	}
 
 }
